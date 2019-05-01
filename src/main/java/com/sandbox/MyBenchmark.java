@@ -34,6 +34,7 @@ package com.sandbox;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.infra.Blackhole;
 
 import com.sandbox.enums.Options;
 import com.sandbox.services.NameUtils;
@@ -45,22 +46,30 @@ public class MyBenchmark {
 	
 	 @State(Scope.Thread)
 	    public static class MyState {
-	        public Options o = Options.A1_B1_C1_D1_E1;
+	        public Options o1 = Options.A1_B1;
+	        public Options o2 = Options.A1_B1_C1_D1_E1;
+	        public Options o3 = Options.A2_D2;
 	    }
 
     @Benchmark
-    public String testStringJoinerAndStreams(MyState state) {
-    	return NameUtils.getNameWithStringJoiner(state.o);	
+    public void testStringJoinerAndStreams(MyState state, Blackhole bh) {
+    	bh.consume(NameUtils.getNameWithStringJoiner(state.o1));
+    	bh.consume(NameUtils.getNameWithStringJoiner(state.o2));
+    	bh.consume(NameUtils.getNameWithStringJoiner(state.o3));
     }
        
     @Benchmark
-    public String testStringBuilder(MyState state) {
-    	return NameUtils.getNameWithStringBuilder(state.o);
+    public void testStringBuilder(MyState state, Blackhole bh) {
+    	bh.consume(NameUtils.getNameWithStringBuilder(state.o1));
+    	bh.consume(NameUtils.getNameWithStringBuilder(state.o1));
+    	bh.consume(NameUtils.getNameWithStringBuilder(state.o3));
     }
     
     @Benchmark
-    public String testStringFormatter(MyState state) {
-    	return NameUtils.getNameWithStringFormattor(state.o);
+    public void testStringFormatter(MyState state, Blackhole bh) {
+    	bh.consume(NameUtils.getNameWithStringFormattor(state.o1));
+    	bh.consume(NameUtils.getNameWithStringFormattor(state.o1));
+    	bh.consume(NameUtils.getNameWithStringFormattor(state.o3));
     }
 
 }
